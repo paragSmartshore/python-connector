@@ -2,9 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
-# TODO: add this project to a repo
 app = Flask(__name__)
 
 @app.route("/")
@@ -34,6 +32,40 @@ def get_salesforce_token():
             return jsonify({
                 "error": response.json(),
                 "message": "Failed to get the token from Salesforce"
+            }), response.status_code
+
+        return jsonify(response.json()), response.status_code
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# New GET endpoint
+@app.route('/api/salesforce/query', methods=['GET'])
+def salesforce_query():
+    query = request.args.get('q')
+    if not query:
+        return jsonify({"error": "Missing required parameter: q"}), 400
+
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Missing or invalid Authorization header"}), 401
+
+    bearer_token = auth_header.split(" ")[1]
+
+    url = f"https://smartshore5-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/"
+
+    headers = {
+        "Authorization": f"Bearer {bearer_token}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params={"q": query})
+
+        if response.status_code != 200:
+            return jsonify({
+                "error": response.json(),
+                "message": "Failed to fetch data from Salesforce"
             }), response.status_code
 
         return jsonify(response.json()), response.status_code
