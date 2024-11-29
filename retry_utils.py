@@ -1,6 +1,9 @@
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 import requests
 from random import randint
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 # Retry configuration
 MAX_RETRIES = 5
@@ -18,9 +21,10 @@ def should_fail():
 )
 def make_post_request(url, data, headers):
     # retry demo
+    logging.info("Attempting POST request...")
     # if should_fail():
     #   raise requests.RequestException("Simulated failure for retry testing")
-    
+    logging.info("POST request succeeded!")
     return requests.post(url, data=data, headers=headers)
 
 # Retryable GET request
