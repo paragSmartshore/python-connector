@@ -3,16 +3,19 @@ from dotenv import load_dotenv
 from retry_utils import make_post_request, make_get_request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from scheduler_utils import setup_scheduler 
 
 load_dotenv()
 app = Flask(__name__)
 
-
+# //TODO: move this to a seperate file 
 limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["10 per minute"]  # Apply a global rate limit of 10 requests per minute
 )
+
+scheduler = setup_scheduler(app)
 
 @app.route("/")
 def home():

@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.INFO)
 MAX_RETRIES = 5
 RETRY_WAIT_SECONDS = 20
 
-# 
 def should_fail():
     return randint(0, 1) == 0  # 50% chance of failure
 
