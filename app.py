@@ -1,9 +1,18 @@
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from retry_utils import make_post_request, make_get_request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 app = Flask(__name__)
+
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["10 per minute"]  # Apply a global rate limit of 10 requests per minute
+)
 
 @app.route("/")
 def home():
@@ -11,6 +20,7 @@ def home():
 
 # Login Post Request
 @app.route('/api/salesforce/token', methods=['POST'])
+@limiter.limit("5 per minute")  # Limit this route to 5 requests per minute per IP
 def get_salesforce_token():
     url = "https://smartshore5-dev-ed.develop.my.salesforce.com/services/oauth2/token"
 
@@ -42,6 +52,7 @@ def get_salesforce_token():
 
 #GET Request
 @app.route('/api/salesforce/query', methods=['GET'])
+@limiter.limit("5 per minute")  # Limit this route to 5 requests per minute per IP
 def salesforce_query():
     query = request.args.get('q')
     if not query:
