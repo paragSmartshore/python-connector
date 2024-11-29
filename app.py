@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-import requests
 from dotenv import load_dotenv
+from retry_utils import make_post_request, make_get_request
 
 load_dotenv()
 app = Flask(__name__)
@@ -9,7 +9,7 @@ app = Flask(__name__)
 def home():
     return jsonify({"message": "Welcome to the Salesforce Connector API"}), 200
 
-
+# Login Post Request
 @app.route('/api/salesforce/token', methods=['POST'])
 def get_salesforce_token():
     url = "https://smartshore5-dev-ed.develop.my.salesforce.com/services/oauth2/token"
@@ -26,7 +26,8 @@ def get_salesforce_token():
         return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
     try:
-        response = requests.post(url, data=form_data, headers=headers)
+        # Use the retryable POST request
+        response = make_post_request(url, data=form_data, headers=headers)
 
         if response.status_code != 200:
             return jsonify({
@@ -39,8 +40,7 @@ def get_salesforce_token():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# New GET endpoint
+#GET Request
 @app.route('/api/salesforce/query', methods=['GET'])
 def salesforce_query():
     query = request.args.get('q')
@@ -60,7 +60,8 @@ def salesforce_query():
     }
 
     try:
-        response = requests.get(url, headers=headers, params={"q": query})
+        # Use the retryable GET request
+        response = make_get_request(url, headers=headers, params={"q": query})
 
         if response.status_code != 200:
             return jsonify({
