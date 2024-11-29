@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "python-connector"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.1.0"
+requests = "^2.32.3"
+python-dotenv = "^1.0.1"
+tenacity = "^9.0.0"
+flask-limiter = "^3.9.2"
+apscheduler = "^3.11.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
