@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
-from dotenv import load_dotenv
+# 3. security 
+# from dotenv import load_dotenv
+# 4. Retry mechanism
 from retry_utils import make_post_request, make_get_request
 from limiter_utils import init_limiter, limiter
 from scheduler_utils import setup_scheduler 
@@ -7,10 +9,10 @@ from scheduler_utils import setup_scheduler
 load_dotenv()
 app = Flask(__name__)
 
-# Rate limiter(to handle throttling)
+# 1. Rate limiter(to handle throttling)
 init_limiter(app)
 
-# Scheduler
+# 2. Scheduler
 scheduler = setup_scheduler(app)
 
 @app.route("/")
@@ -34,6 +36,7 @@ def get_salesforce_token():
     if missing_fields:
         return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
+# 5. Error and Exception Handling 
     try:
         # Use the retryable POST request
         response = make_post_request(url, data=form_data, headers=headers)
