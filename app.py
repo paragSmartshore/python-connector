@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
-# 3. security 
+# 3. security: env,bearer
 # from dotenv import load_dotenv
 # 4. Retry mechanism
 from retry_utils import make_post_request, make_get_request
 from limiter_utils import init_limiter, limiter
 from scheduler_utils import setup_scheduler 
 
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 
 # 1. Rate limiter(to handle throttling)
